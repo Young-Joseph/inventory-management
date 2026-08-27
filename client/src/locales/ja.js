@@ -6,6 +6,7 @@ export default {
     orders: '注文',
     finance: '財務',
     demandForecast: '需要予測',
+    restocking: '補充',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -125,7 +126,13 @@ export default {
       totalValue: '合計金額',
       status: 'ステータス',
       expectedDelivery: '予定配達日',
-      actualDelivery: '実際の配達日'
+      actualDelivery: '実際の配達日',
+      leadTime: 'リードタイム'
+    },
+    submitted: {
+      title: '発注済み注文',
+      description: '配達待ちの補充注文',
+      leadTimeDays: '{count}日'
     }
   },
 
@@ -185,6 +192,37 @@ export default {
       change: '変化',
       trend: 'トレンド',
       period: '期間'
+    }
+  },
+
+  // Restocking
+  restocking: {
+    title: '補充',
+    description: '需要予測を予算内の発注書に変換します',
+    availableBudget: '利用可能予算',
+    budgetHelp: 'スライダーで予算を設定してください。推奨品目は自動的に更新されます。',
+    allocated: '割当額',
+    remaining: '残額',
+    itemsRecommended: '推奨品目数',
+    recommendations: '推奨補充品目',
+    placeOrder: '発注する',
+    placingOrder: '発注中...',
+    orderPlaced: '注文{orderNumber}を発注しました。予定配達日は{date}です（リードタイム{days}日）。',
+    viewInOrders: '注文タブで確認できます。',
+    noRecommendations: 'この予算では発注できる品目がありません。予算を増やしてください。',
+    nothingToRestock: 'すべての予測品目の在庫は十分です。現在補充の必要はありません。',
+    unfundedNote: 'あと{count}件の品目が補充を必要としていますが、この予算では対応できません。',
+    table: {
+      sku: 'SKU',
+      itemName: '品目名',
+      warehouse: '倉庫',
+      onHand: '在庫数',
+      forecast: '予測需要',
+      trend: '傾向',
+      quantity: '発注数',
+      unitCost: '単価',
+      lineCost: '小計',
+      leadTime: 'リードタイム'
     }
   },
 
@@ -328,6 +366,13 @@ export default {
 
   // Product Names
   productNames: {
+    'Industrial Widget Type A': '産業用ウィジェット タイプA',
+    'Steel Bearing Assembly': 'スチールベアリングアセンブリ',
+    'High-Temperature Gasket': '高温用ガスケット',
+    'Electric Motor 5HP': '電動モーター 5HP',
+    'Oil Filter Cartridge': 'オイルフィルターカートリッジ',
+    'Pressure Relief Valve': '圧力逃がし弁',
+    'Logic Controller Board': 'ロジックコントローラーボード',
     'Single Layer PCB Assembly': '単層PCB組立',
     'Dual Layer PCB Assembly': '二層PCB組立',
     'Multi Layer PCB Assembly': '多層PCB組立',

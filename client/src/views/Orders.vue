@@ -27,6 +27,57 @@
         </div>
       </div>
 
+      <div v-if="submittedOrders.length" class="card">
+        <div class="card-header">
+          <h3 class="card-title">{{ t('orders.submitted.title') }} ({{ submittedOrders.length }})</h3>
+          <span class="card-subtitle">{{ t('orders.submitted.description') }}</span>
+        </div>
+        <div class="table-container table-container-open">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th class="col-order-number">{{ t('orders.table.orderNumber') }}</th>
+                <th class="col-items">{{ t('orders.table.items') }}</th>
+                <th class="col-status">{{ t('orders.table.status') }}</th>
+                <th class="col-date">{{ t('orders.table.orderDate') }}</th>
+                <th class="col-lead-time">{{ t('orders.table.leadTime') }}</th>
+                <th class="col-date">{{ t('orders.table.expectedDelivery') }}</th>
+                <th class="col-value">{{ t('orders.table.totalValue') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in submittedOrders" :key="order.id">
+                <td class="col-order-number"><strong>{{ order.order_number }}</strong></td>
+                <td class="col-items">
+                  <details class="items-details">
+                    <summary class="items-summary">
+                      {{ t('orders.itemsCount', { count: order.items.length }) }}
+                    </summary>
+                    <div class="items-dropdown">
+                      <div v-for="item in order.items" :key="item.sku" class="item-entry">
+                        <span class="item-name">{{ translateProductName(item.name) }}</span>
+                        <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ currencySymbol }}{{ item.unit_price }}</span>
+                      </div>
+                    </div>
+                  </details>
+                </td>
+                <td class="col-status">
+                  <span :class="['badge', getOrderStatusClass(order.status)]">
+                    {{ t(`status.${order.status.toLowerCase()}`) }}
+                  </span>
+                </td>
+                <td class="col-date">{{ formatDate(order.order_date) }}</td>
+                <td class="col-lead-time">
+                  {{ t('orders.submitted.leadTimeDays', { count: getLeadTimeDays(order) }) }}
+                </td>
+                <td class="col-date">{{ formatDate(order.expected_delivery) }}</td>
+                <td class="col-value"><strong>{{ currencySymbol }}{{ order.total_value.toLocaleString() }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">{{ t('orders.allOrders') }} ({{ orders.length }})</h3>
@@ -95,6 +146,7 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    const submittedOrders = ref([])
 
     // Use shared filters
     const {
@@ -108,8 +160,14 @@ export default {
     const loadOrders = async () => {
       try {
         loading.value = true
+        error.value = null
         const filters = getCurrentFilters()
-        const fetchedOrders = await api.getOrders(filters)
+
+        // Restocking orders are returned separately - they aren't customer orders
+        const [fetchedOrders, fetchedSubmitted] = await Promise.all([
+          api.getOrders(filters),
+          api.getRestockingOrders()
+        ])
 
         // Sort orders by order_date (earliest first)
         orders.value = fetchedOrders.sort((a, b) => {
@@ -117,11 +175,20 @@ export default {
           const dateB = new Date(b.order_date)
           return dateA - dateB
         })
+
+        submittedOrders.value = fetchedSubmitted
       } catch (err) {
         error.value = 'Failed to load orders: ' + err.message
       } finally {
         loading.value = false
       }
+    }
+
+    // Whole order lands when its slowest line item does
+    const getLeadTimeDays = (order) => {
+      const ordered = new Date(order.order_date)
+      const expected = new Date(order.expected_delivery)
+      return Math.round((expected - ordered) / (1000 * 60 * 60 * 24))
     }
 
     // Watch for filter changes and reload data
@@ -160,6 +227,8 @@ export default {
       loading,
       error,
       orders,
+      submittedOrders,
+      getLeadTimeDays,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
@@ -172,6 +241,24 @@ export default {
 </script>
 
 <style scoped>
+.card-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.col-lead-time {
+  width: 120px;
+}
+
+/* The global .table-container sets overflow-x, which per spec forces overflow-y
+   to auto as well. With only a handful of submitted orders the container is
+   shorter than an open items dropdown, so the dropdown gets clipped. This table
+   has seven fixed-width columns that fit the app container, so it can opt out of
+   scrolling and let the dropdown overflow instead. */
+.table-container-open {
+  overflow: visible;
+}
+
 /* Fixed table layout to prevent column shifting */
 .orders-table {
   table-layout: fixed;

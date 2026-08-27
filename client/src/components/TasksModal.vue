@@ -167,8 +167,16 @@ export default {
       }
     }
 
+    // Due dates arrive as bare YYYY-MM-DD, which Date parses as UTC midnight -
+    // west of Greenwich that reads back as the previous day. Pin to local
+    // midnight so the date shown is the date that was set.
+    const parseDueDate = (dateString) => {
+      const isDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateString)
+      return new Date(isDateOnly ? `${dateString}T00:00:00` : dateString)
+    }
+
     const formatDueDate = (dateString) => {
-      const date = new Date(dateString)
+      const date = parseDueDate(dateString)
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const dueDate = new Date(date)
@@ -198,7 +206,7 @@ export default {
 
       const today = new Date()
       today.setHours(0, 0, 0, 0)
-      const due = new Date(dueDate)
+      const due = parseDueDate(dueDate)
       due.setHours(0, 0, 0, 0)
 
       const diffTime = due - today

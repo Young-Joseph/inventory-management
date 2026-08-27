@@ -6,6 +6,7 @@ export default {
     orders: 'Orders',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
+    restocking: 'Restocking',
     companyName: 'Catalyst Components',
     subtitle: 'Inventory Management System'
   },
@@ -125,7 +126,13 @@ export default {
       totalValue: 'Total Value',
       status: 'Status',
       expectedDelivery: 'Expected Delivery',
-      actualDelivery: 'Actual Delivery'
+      actualDelivery: 'Actual Delivery',
+      leadTime: 'Lead Time'
+    },
+    submitted: {
+      title: 'Submitted Orders',
+      description: 'Restocking orders awaiting delivery',
+      leadTimeDays: '{count} days'
     }
   },
 
@@ -185,6 +192,37 @@ export default {
       change: 'Change',
       trend: 'Trend',
       period: 'Period'
+    }
+  },
+
+  // Restocking
+  restocking: {
+    title: 'Restocking',
+    description: 'Turn demand forecasts into a purchase order that fits your budget',
+    availableBudget: 'Available Budget',
+    budgetHelp: 'Drag to set what you can spend. Recommendations update automatically.',
+    allocated: 'Allocated',
+    remaining: 'Remaining',
+    itemsRecommended: 'Items Recommended',
+    recommendations: 'Recommended Restocking',
+    placeOrder: 'Place Order',
+    placingOrder: 'Placing Order...',
+    orderPlaced: 'Order {orderNumber} submitted. Expected delivery {date} ({days} days lead time).',
+    viewInOrders: 'View it in the Orders tab.',
+    noRecommendations: 'No items can be funded at this budget. Increase the budget to see recommendations.',
+    nothingToRestock: 'Every forecast item is fully stocked. Nothing to restock right now.',
+    unfundedNote: '{count} more item(s) need restocking but do not fit in this budget.',
+    table: {
+      sku: 'SKU',
+      itemName: 'Item Name',
+      warehouse: 'Warehouse',
+      onHand: 'On Hand',
+      forecast: 'Forecast',
+      trend: 'Trend',
+      quantity: 'Order Qty',
+      unitCost: 'Unit Cost',
+      lineCost: 'Line Cost',
+      leadTime: 'Lead Time'
     }
   },
 
